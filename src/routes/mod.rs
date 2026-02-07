@@ -1,1 +1,2 @@
-pub mod status;
+pub mod routes;
+pub mod user;
