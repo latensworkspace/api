@@ -6,7 +6,10 @@ edition = "2024"
 [dependencies]
 tokio = { version = "1.0", features = ["full"] }
 reqwest = { version = "0.11", features = ["json"] }
-anyhow = "1.0" # Para lidar com erros de forma limpa
+anyhow = "1.0"
 axum = "0.7"
-serde = { version = "1.0", features = ["derive"] } # Para JSON
+serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
+mongodb = "3.1"
+bson = "2.0"
+dotenvy = "0.15.7"
