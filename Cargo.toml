@@ -13,3 +13,4 @@ serde_json = "1.0"
 mongodb = "3.1"
 bson = "2.0"
 dotenvy = "0.15.7"
+validator = { version = "0.20.0", features = ["derive"] }
