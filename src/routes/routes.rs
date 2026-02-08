@@ -10,7 +10,7 @@ type AppRoute = (&'static str, &'static str, MethodRouter<AppState>);
 
 pub fn routes() -> Vec<AppRoute> {
     vec![
-        ("GET", "/users", get(user::get::get_all_users)),
+        ("GET", "/users/:id", get(user::get::handler)),
         ("POST", "/users", post(user::create::handler)),
     ]
 }

@@ -1,38 +1,41 @@
 use axum::{
-    extract::State,
+    extract::{Path, State},
     Json,
-    http::StatusCode,
 };
-use mongodb::bson::doc;
+use mongodb::bson::{doc, oid::ObjectId};
 
-use crate::db::state::AppState;
-use crate::models::user::user::CreateUserRequest;
+use crate::{
+    db::state::AppState,
+    errors::error::ApiError, models::user::get::GetUserRequest,
+};
 
-pub async fn get_all_users(
+pub async fn handler(
     State(state): State<AppState>,
-) -> Result<Json<Vec<CreateUserRequest>>, StatusCode> {
-    let collection = state
-        .db
-        .collection::<CreateUserRequest>("users");
+    Path(id): Path<String>,
+) -> Result<Json<GetUserRequest>, ApiError> {
+    let object_id = ObjectId::parse_str(&id)
+        .map_err(|_| ApiError::UserNotFound)?;
 
-    let mut cursor = collection
-        .find(doc! {})
+    let collection = state.db.collection::<mongodb::bson::Document>("users");
+
+    let user = collection
+        .find_one(doc! { "_id": object_id })
         .await
-        .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
+        .map_err(|_| ApiError::Database)?
+        .ok_or(ApiError::UserNotFound)?;
 
-    let mut users = Vec::new();
-
-    while cursor
-        .advance()
-        .await
-        .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?
-    {
-        users.push(
-            cursor
-                .deserialize_current()
-                .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?
-        );
-    }
-
-    Ok(Json(users))
+    Ok(Json(GetUserRequest {
+        id: user
+            .get_object_id("_id")
+            .unwrap()
+            .to_string(),
+        name: user
+            .get_str("name")
+            .unwrap_or("")
+            .to_string(),
+        email: user
+            .get_str("email")
+            .unwrap_or("")
+            .to_string(),
+    }))
 }
