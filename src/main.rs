@@ -1,4 +1,5 @@
 mod db;
+mod errors;
 mod models;
 mod routes;
 
@@ -15,6 +16,6 @@ async fn main() {
     println!("\n🚀 Running on http://{}", addr);
 
     let listener = TcpListener::bind(addr).await.unwrap();
-    
+
     axum::serve(listener, app).await.unwrap();
 }
