@@ -1,9 +1,9 @@
-use mongodb::{Client, options::ClientOptions};
+use mongodb::{Client, Database, options::ClientOptions};
 use dotenvy::dotenv;
 
 use crate::db::state::AppState;
 
-pub async fn establish_connection() -> mongodb::error::Result<AppState> {
+pub async fn establish_connection() -> mongodb::error::Result<Database> {
     dotenv().ok();
 
     let uri = std::env::var("MONGODB_URI")
@@ -16,5 +16,5 @@ pub async fn establish_connection() -> mongodb::error::Result<AppState> {
 
     println!("✅ Database connected successfully");
 
-    Ok(AppState { db })
+    Ok(db)
 }
