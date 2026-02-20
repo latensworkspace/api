@@ -14,3 +14,6 @@ mongodb = "3.1"
 bson = "2.0"
 dotenvy = "0.15.7"
 validator = { version = "0.20.0", features = ["derive"] }
+oauth2 = "5.0.0"
+jsonwebtoken = { version = "10.3.0", features = ["rust_crypto"] }
+chrono = "0.4.43"
