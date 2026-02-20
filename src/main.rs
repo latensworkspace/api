@@ -1,14 +1,22 @@
+mod auth;
 mod db;
 mod errors;
 mod models;
 mod routes;
+mod services;
+mod middlewares;
 
 use std::net::SocketAddr;
 use tokio::net::TcpListener;
 
+use crate::db::state::AppState;
+
 #[tokio::main]
 async fn main() {
-    let state = db::mongodb::establish_connection().await.unwrap();
+    let oauth_client = auth::google::oauth_client().await.unwrap();
+    let db = db::mongodb::establish_connection().await.unwrap();
+
+    let state = AppState { db, oauth_client };
 
     let app = routes::routes::create_router(state);
 
