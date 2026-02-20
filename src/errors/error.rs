@@ -8,14 +8,13 @@ use validator::ValidationErrors;
 
 #[derive(Debug)]
 pub enum ApiError {
-    Validation {
-        errors: Vec<String>,
-    },
+    Validation { errors: Vec<String> },
     Database,
-    NotFound,
-    Unauthorized,
-    Internal,
     UserNotFound,
+    Unauthorized,
+    MissingToken,
+    NotFound,
+    Internal,
 }
 
 impl ApiError {
@@ -26,9 +25,7 @@ impl ApiError {
             .map(|field| field.to_string())
             .collect();
 
-        ApiError::Validation {
-            errors: fields,
-        }
+        ApiError::Validation { errors: fields }
     }
 }
 
@@ -51,6 +48,12 @@ impl IntoResponse for ApiError {
             )
                 .into_response(),
 
+            ApiError::MissingToken => (
+                StatusCode::UNAUTHORIZED,
+                Json(json!({ "error": "missing_jwt_token" })),
+            )
+                .into_response(),
+
             ApiError::NotFound => {
                 (StatusCode::NOT_FOUND, Json(json!({ "error": "not_found" }))).into_response()
             }
@@ -65,7 +68,7 @@ impl IntoResponse for ApiError {
                 StatusCode::INTERNAL_SERVER_ERROR,
                 Json(json!({ "error": "internal_server_error" })),
             )
-                .into_response()
+                .into_response(),
         }
     }
 }
